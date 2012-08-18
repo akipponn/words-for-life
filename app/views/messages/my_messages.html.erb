@@ -1,0 +1,28 @@
+<div class="main">
+
+<% if @current_user %>
+	<% if @messages.length == 0 %>
+		<br /><br /><br /><br />
+		<center>No message. Create?</center>
+		<br />
+		<%= render 'form' %>
+	<% else %>
+		<ul class="myMessages">
+			<% @messages.each {|m|%>
+				<% if m.mid %>
+				<li class="message" id="<%= m.mid %>">
+					<div class="opMenu" style="float: right;">
+						<%= link_to (image_tag "icons/edit_20x20.png"), :controller => "messages", :action => "play", :mid => m.mid, :edit => 1 %> 
+						<%= link_to (image_tag "icons/delete_20x20_2.png"), :controller => "messages", :action => "play", :mid => m.mid, :delete => 1 %>
+					</div>
+					<span class="messageText"><%= link_to m.text, "/" + m.mid, :class=>"showMessage" %></span><br />
+					<span class="messageDate"><%= m.updated_at.strftime("%d %b %Y") %></span>
+				</li>
+				<% end %>
+			<% } %>
+		</ul>
+	<% end %>
+<% else %>
+
+<% end %>
+</div>

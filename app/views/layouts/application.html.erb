@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= content_for?(:title) ? yield(:title) : "Words for Life - Send beautiful words to your dearest people" %></title>
+  <link rel="image_src" type="image/png" href="/assets/logo.png" />
+
+  <meta property="fb:app_id" content="163537863755310"/>
+  <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : "Words for Life - Send beautiful words to your dearest people" %>" />
+  <meta property="og:type" content="website"/>
+  <meta property="og:image" content="http://w4l.herokuapp.com/assets/logo.png"/>
+
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" ></script>
+  
+<body onload="init();">
+
+<style>
+	div.menu{
+		text-align: right;
+		margin-right: 20px;
+	}
+	
+	div.footer{
+		font-size: 50%;
+		margin-top: 75px;
+	}
+</style>
+<div class="menu">
+<!--	<%= image_tag "logo_h20.png" %> -->
+<% if current_user %>
+	<a href="<%= session[:prof_url] %>" title="<%= current_user.name %>"><img src="<%= session[:prof_image] %>" width="20"></a> 
+	&nbsp;
+	<%= link_to (image_tag "icons/home_20x20.png"), :root, :title => "home" %>
+	<%= link_to (image_tag "icons/create_20x20.png"), :create, :title => "create" %>
+	<%= link_to (image_tag "icons/list_20x20.png"), :my_messages, :title => "my messages" %>
+	<%= link_to (image_tag "icons/logout_20x20.png"), signout_path, :title => "logout" %>
+<% else %>
+	<%= link_to (image_tag "icons/home_20x20.png"), :root, :title => "home" %><%= link_to (image_tag "icons/create_20x20.png"), :create, :title => "create" %><br />
+	<%= image_tag "icons/login_20x20.png" %><%= link_to (image_tag "icons/twitter_20x20.png"), '/auth/twitter' %><%= link_to (image_tag "icons/facebook_20x20.png"), '/auth/facebook' %>
+<% end %>
+</div>
+
+	<%= yield %>
+
+<div class="footer">
+	<center>
+		W4L is written by aki takahashi 2012. Icons are from: <a href="http://pc.de/icons/" target="_blank">PC</a> and <a href="http://www.iconfinder.com/search/?q=iconset%3Abrightmix" target="_blank">Brightmix</a>. Thx!
+	</center>
+	<br /><br />
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- This application is especially dedicated to the person who let me know the pleasure of exchanging beautiful words. Happy Valentine's day. Thank you & kiss. -->

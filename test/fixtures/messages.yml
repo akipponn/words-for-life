@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  text: MyText
+  user_id: 1
+  bg_color: MyString
+  message_color: MyString
+
+two:
+  text: MyText
+  user_id: 1
+  bg_color: MyString
+  message_color: MyString

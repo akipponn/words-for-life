@@ -1,0 +1,366 @@
+<% content_for :title do %>
+"<%= @message.text %>" - Words for Life - Send beautiful words to your dearest people
+<% end %>
+  
+<!-- <p id="notice"><%= notice %></p> -->
+
+<script>
+
+var b2Vec2 = Box2D.Common.Math.b2Vec2,  
+b2AABB = Box2D.Collision.b2AABB,
+b2BodyDef = Box2D.Dynamics.b2BodyDef,
+b2Body = Box2D.Dynamics.b2Body,	
+b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
+b2Fixture = Box2D.Dynamics.b2Fixture,
+b2World = Box2D.Dynamics.b2World,
+b2MassData = Box2D.Collision.Shapes.b2MassData,
+b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,	
+b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
+b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
+b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef,
+b2DistanceJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef,
+b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
+
+var world;
+
+var scale = 31;
+var charSize = 42;	// pt
+var boundarySize = 24;	// div size in px
+
+var bodies = [];
+var elements = [];
+
+var isDebug = false;
+
+function addChar( c, size, color, posX, posY)
+{
+    var cBaseDiv = document.createElement( 'div' );
+	cBaseDiv.width = cBaseDiv.height = size;
+	cBaseDiv.style.position = 'absolute';
+	cBaseDiv.style.left = -size + 'px';
+	cBaseDiv.style.top = -size + 'px';
+	cBaseDiv.style.cursor = "default";
+	elements.push( cBaseDiv);
+	// baseCanvas.appendChild(element); // it doesn't work
+	document.getElementById("baseDiv").appendChild(cBaseDiv);
+
+	text = document.createElement('div');
+	text.class = "aChar";
+	text.name = "text";
+	text.onSelectStart = null;
+	text.style.height = "auto";
+	text.innerHTML = c;
+	text.style.color = color;
+	text.style.fontSize = charSize + "pt";
+	text.style.position = 'absolute';
+	text.style.left = '0px';
+	text.style.top = '0px';
+	text.style.fontFamily = 'Georgia';
+	text.style.textAlign = 'center';
+	cBaseDiv.appendChild(text);
+	
+	// cBaseDiv.width = text.clientWidth;
+	// cBaseDiv.height = text.clientHeight;
+	// alert(text.clientHeight);
+	var fDef = new b2FixtureDef;
+//	fDef.shape = new b2CircleShape( cBaseDiv.width / scale);
+	fDef.shape = new b2CircleShape( boundarySize / scale);
+
+/*	var fDef = new b2FixtureDef;
+	fDef.shape = new b2PolygonShape;
+	fDef.shape.SetAsBox( (cBaseDiv.width / scale), (cBaseDiv.height / scale));*/
+	
+	var bDef = new b2BodyDef;
+	bDef.type = b2Body.b2_dynamicBody;
+	bDef.position.x = posX;
+    bDef.position.y = posY;
+	// bDef.linearVelocity.Set( Math.random() * 200, Math.random() * 200 );
+	bDef.userData = {element: cBaseDiv};
+	
+	var body = world.CreateBody(bDef)
+	body.CreateFixture(fDef);
+	bodies.push( body);
+	
+	return body;
+}
+
+function init() {     
+	world = new b2World( 
+		new b2Vec2(0, 10),	//gravity
+		true				//allow sleep
+ 	);
+
+    var bodyDef = new b2BodyDef;
+	var fixDef = new b2FixtureDef;
+	fixDef.density = 1.0;
+	fixDef.friction = 0.5;
+	fixDef.restitution = 0.2;
+
+	// floor
+	bodyDef.type = b2Body.b2_staticBody;
+	fixDef.shape = new b2PolygonShape;
+	fixDef.shape.SetAsBox(18, 0.1);	
+	bodyDef.position.Set(14, 14);
+	world.CreateBody(bodyDef).CreateFixture(fixDef);
+    
+    <% for i in 0..@message.text.length - 1 %>
+    	<% if @message.text[i..i] != " " %>
+	    	<% c = @message.text[i..i] %>
+	    	<% if c == "'" %>
+	    		<% c = "\\" + @message.text[i..i] %>
+	    	<% elsif c == "-" %>
+	    		<% c = " " %>
+			<% end %>
+	    
+			var body_<%= i.to_s %> = <%= "addChar('" + c + "', 36, '#000000', " + (1.2 + i * 1).to_s + ", " + (-2 - 0.9 * i).to_s + ");" %>
+			// joint with the prev one.
+	
+			<% if i > 0 && @message.text[i-1..i-1] != " " %>
+			var dJointDef_<%= i.to_s %> = new b2DistanceJointDef();
+			dJointDef_<%= i.to_s %>.bodyA = body_<%= i-1 %>;
+			dJointDef_<%= i.to_s %>.bodyB = body_<%= i %>;
+			//dJointDef.localAnchorA.Set(0, 0);
+			dJointDef_<%= i.to_s %>.localAnchorA.Set(0, 0.3);
+			dJointDef_<%= i.to_s %>.localAnchorB.Set(0, 0.3);
+			dJointDef_<%= i.to_s %>.length = 1;
+			dJointDef_<%= i.to_s %>.frequency = 0.1;
+			world.CreateJoint(dJointDef_<%= i.to_s %>);
+	/*
+			var dJointDef_<%= i.to_s %>1 = new b2DistanceJointDef();
+			dJointDef_<%= i.to_s %>1.bodyA = body_<%= i-1 %>;
+			dJointDef_<%= i.to_s %>1.bodyB = body_<%= i %>;
+			//dJointDef.localAnchorA.Set(0, 0);
+			dJointDef_<%= i.to_s %>1.localAnchorA.Set(0, -0.3);
+			dJointDef_<%= i.to_s %>1.localAnchorB.Set(0, -0.3);
+			dJointDef_<%= i.to_s %>1.length = boundarySize / scale * 2;
+			dJointDef_<%= i.to_s %>1.frequency = 0.1;
+			world.CreateJoint(dJointDef_<%= i.to_s %>1);*/
+			<% end %>
+		<% end %>		 
+	<% end %>
+	
+	//setup debug draw
+	if(isDebug)
+    {
+		var debugDraw = new b2DebugDraw();
+		debugDraw.SetSprite(document.getElementById("baseCanvas").getContext("2d"));
+		debugDraw.SetDrawScale(30.0);
+		debugDraw.SetFillAlpha(0.5);
+		debugDraw.SetLineThickness(1.0);
+		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+		world.SetDebugDraw(debugDraw);
+    }
+         
+	window.setInterval(update, 1000 / 60);
+
+	//mouse
+	var mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
+	var canvasPosition = getElementPosition(document.getElementById("baseCanvas"));
+
+	document.addEventListener("mousedown", function(e) {
+		isMouseDown = true;
+		handleMouseMove(e);
+		document.addEventListener("mousemove", handleMouseMove, true);
+	}, true);
+
+	document.addEventListener(
+		"mouseup", 
+		function() {
+			document.removeEventListener("mousemove", handleMouseMove, true);
+		    isMouseDown = false;
+		    mouseX = undefined;
+		    mouseY = undefined;
+ 		}, 
+ 		true
+ 	);
+ 	
+	function handleMouseMove(e) {
+		mouseX = (e.clientX - canvasPosition.x) / 30;
+		mouseY = (e.clientY - canvasPosition.y) / 30;
+	};
+
+	function getBodyAtMouse() {
+		mousePVec = new b2Vec2(mouseX, mouseY);
+		var aabb = new b2AABB();
+		aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
+		aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
+        
+        // Query the world for overlapping shapes.
+
+		selectedBody = null;
+        world.QueryAABB(getBodyCB, aabb);
+        return selectedBody;
+	}
+
+    function getBodyCB(fixture) {
+		if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+			if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+				selectedBody = fixture.GetBody();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	//update
+	function update() 
+	{
+		if(isMouseDown && (!mouseJoint)) 
+		{
+			var body = getBodyAtMouse();
+			if(body) 
+			{
+				var md = new b2MouseJointDef();
+				md.bodyA = world.GetGroundBody();
+				md.bodyB = body;
+				md.target.Set(mouseX, mouseY);
+				md.collideConnected = true;
+				md.maxForce = 300.0 * body.GetMass();
+				mouseJoint = world.CreateJoint(md);
+				body.SetAwake(true);
+			}
+		}
+        
+        if(mouseJoint)
+        {
+           if(isMouseDown) 
+           {
+				mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
+           } 
+           else 
+           {
+				world.DestroyJoint(mouseJoint);
+				mouseJoint = null;
+           }
+        }
+     
+        world.Step(1 / 60, 10, 10);
+        if(isDebug)
+        {
+	        world.DrawDebugData();
+	    }
+        
+        // draw each element
+        for (i = 0; i < bodies.length; i++) 
+        {
+			var body = bodies[i];
+			var element = elements[i];
+
+			element.style.left = (body.GetPosition().x * scale - (element.width >> 1)) + 'px';
+			element.style.top = (body.GetPosition().y * scale - (element.height >> 1)) + 30 + 'px';
+
+			if (element.tagName == 'DIV') 
+			{	
+				var rotationStyle = 'rotate(' + (body.GetAngle() * 180 / Math.PI) + 'deg)';
+				var text = element.firstChild;
+				text.style.WebkitTransform = rotationStyle;
+				text.style.MozTransform = rotationStyle;
+				text.style.OTransform = rotationStyle;
+				text.style.msTransform = rotationStyle;
+			}
+		}
+		
+	    world.ClearForces();
+     };
+         
+     //helpers
+         
+     //http://js-tut.aardon.de/js-tut/tutorial/position.html
+     function getElementPosition(element) {
+        var elem=element, tagname="", x=0, y=0;
+       
+        while((typeof(elem) == "object") && (typeof(elem.tagName) != "undefined")) {
+           y += elem.offsetTop;
+           x += elem.offsetLeft;
+           tagname = elem.tagName.toUpperCase();
+
+           if(tagname == "BODY")
+              elem=0;
+
+           if(typeof(elem) == "object") {
+              if(typeof(elem.offsetParent) == "object")
+                 elem = elem.offsetParent;
+           }
+        }
+
+        return {x: x, y: y};
+     }
+};
+
+	function debugWrite( msg){
+		var debugDiv = document.getElementById("debugDiv");
+		debugDiv.innerHTML += msg + "<br />";
+	}
+
+  </script>
+
+  <canvas id="baseCanvas" width="800" height="450" style="background-color:#ffffff;" >
+  </canvas>
+  
+  <div id="baseDiv" width="800" height="450" style="background-color:#cccddc; margin: 30px;">
+	<!-- dummy -->
+  </div>
+  
+  <div id="debugDiv"></div>
+
+<style>
+ul.share{
+	margin: 0px 0px 0px 50px; 
+	padding: 0; 
+	list-style: none;
+}
+
+li.shareItem{ 
+	display: inline; 
+	padding: 0; 
+	margin: 0; 
+	float: left;
+}
+
+::selection {
+    background: #ffffff; /* Safari */
+}
+::-moz-selection {
+    background: #ffffff; /* Firefox */
+}
+</style>
+
+<!--
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Drug & drop the message :)
+-->
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<% if @message.user && @message.user.provider == "twitter" %>
+	<img src="http://api.twitter.com/1/users/profile_image/<%= @message.user.uid %>" width="20px">
+<% elsif @message.user && @message.user.provider == "facebook" %>
+	<img src="http://graph.facebook.com/<%= @message.user.uid %>/picture" width="20px">
+<% end %>
+
+<% if @message.user && @message.user_id == session[:user_id] %>
+	&nbsp;&nbsp;
+	<%= link_to (image_tag "icons/edit_20x20.png"), :controller => "messages", :action => "play", :mid => @message.mid, :edit => 1 %> 
+	<%= link_to (image_tag "icons/delete_20x20_2.png"), :controller => "messages", :action => "play", :mid => @message.mid, :delete => 1 %>
+<% end %>
+<br /><br />
+
+<div id="fb-root"></div>
+
+<ul class="share">
+<li class="shareItem">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://w4l.heroku.com/<%=@message.mid%>" data-text="Words for Life '<%= @message.text%>'">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</li>
+<li class="shareItem">
+	<a name="fb_share"></a>
+	<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
+	        type="text/javascript">
+	</script>
+	&nbsp;
+</li>
+<li><iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fw4l.herokuapp.com%2F<%=@message.mid%>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=163537863755310" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></li>
+</ul>
+
+<!--
+<%= link_to 'Back', messages_path %> | 
+-->

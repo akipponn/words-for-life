@@ -1,0 +1,44 @@
+// Place all the styles related to the messages controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+img {
+  border-style: none;
+}
+
+div.main{
+  width: 600px;
+  margin-top: 60px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ul.myMessages{
+  list-style-type:none;
+}
+
+ul.myMessages li.message {
+  padding: 20px 0px 20px 0px;
+}
+
+.messageText{
+  font-size: 20pt;
+  font-family: Georgia;
+}
+
+.messageDate{
+  font-family: Georgia;
+}
+
+.messageText {
+  
+}
+
+.date {
+  
+}
+
+a.showMessage {
+  text-decoration: none;
+}
+

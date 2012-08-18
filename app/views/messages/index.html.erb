@@ -1,0 +1,87 @@
+<script>
+$(document).ready(function() {
+	// setInterval( "updateMessages()", 1000);
+});
+
+var messages = {};
+function updateMessages(){
+	var divMain = document.getElementById("divMain");
+
+	var now = ( new Date().getTime());
+	for (var m in messages) {
+		
+ 		if( now - messages[m] > 3000){
+			divMain.removeChild(document.getElementById(m));
+			delete messages[m];
+ 		}
+	}
+	
+	var mDiv = document.createElement( 'div');
+	mDiv.id = now;
+	mDiv.style.position = 'absolute';
+	mDiv.style.left = Math.random() * 600 + 'px';
+	mDiv.style.top = Math.random() * 300 + 'px';
+	mDiv.innerText = "aaa";
+	document.getElementById("divMain").appendChild(mDiv);
+	
+	messages[mDiv.id] = now;
+}
+</script>
+
+<div class="main" id="divMain">
+<br /><br /><br />
+<center>
+<%= image_tag "logo.png" %>
+<br />
+<p style="font-family: Georgia">
+Words for Life. Send beautiful words to your dearest people.
+</p>
+
+<br />
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=163537863755310";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<br />
+<div class="fb-like" data-href="http://w4l.herokuapp.com/" data-send="true" data-width="380" data-show-faces="true"></div>
+<!--
+<h1>Listing messages</h1>
+
+<table>
+  <tr>
+    <th>Text</th>
+    <th>User</th>
+    <th>Bg color</th>
+    <th>Message color</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @messages.each do |message| %>
+  <tr>
+    <td><%= message.text %></td>
+    <td><%= message.user_id %></td>
+    <td><%= message.bg_color %></td>
+    <td><%= message.message_color %></td>
+    <td><%= link_to 'Show', message %></td>
+    <td><%= link_to 'Edit', edit_message_path(message) %></td>
+    <td><%= link_to 'Destroy', message, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+-->
+<!--
+<%= link_to 'Create a message?', :new %>
+-->
+</center>
+</div>
